@@ -16,36 +16,8 @@ if (count($services) > 3) {
     $selected = $services;
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Bonsai App helps you create and explore branching AI prompt workflows, called prompt trees, for tasks like job searching, writing, research, and more." />
-  <meta name="keywords" content="Bonsai App, Prompt Trees, AI Workflows, Job Search, Agentic AI, LangGraph, LLM, Orchestration" />
-  <meta name="author" content="Taylor Laporte" />
-  <title>BonsAI Studio – Full Service AI Agency</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="assets/images/favicon.png" />
-</head>
-<body>
-
-  <header class="header hide" id="mainHeader">
-    <div class="container">
-      <img src="assets/bonsai.png" alt="Bonsai Studio Logo" class="logo-image">
-      <h1 class="logo">Bonsai Studio</h1>
-      <nav>
-        <ul class="nav-links">
-          <li><a href="index.php">Home</a></li>
-          <li><a href="services-catalog.php">Services</a></li>
-          <li><a href="about.php">About</a></li>
-          <li><a href="login.php">Login</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <section class="hero">
+<?php require('header.php'); ?>
+  <section class="hero glass-gradient">
     <div class="container">
       <video autoplay muted class="hero-video" id="heroVideo">
         <source src="assets/BonsaiStudio Animation.mp4" type="video/mp4">
@@ -57,39 +29,53 @@ if (count($services) > 3) {
           var header = document.getElementById('mainHeader');
           video.addEventListener('animationend', function() {
             video.style.opacity = 1;
+            video.playbackRate = 1.5;
           });
           video.addEventListener('pause', function() {
-  video.classList.add('shrink-fade-out');
-  setTimeout(function() {
-    video.classList.add('hide');
-    header.classList.remove('hide');
-    header.classList.add('slide-up');
-  }, 700); // match animation duration
-});
+            var logo = document.querySelector('.logo-image');
+            var bonsaiImg = document.querySelector('.hero-bonsai-image');
+            // Temporarily show logo for position calculation
+            logo.style.visibility = 'visible';
+            logo.style.opacity = '1';
+            var videoRect = video.getBoundingClientRect();
+            var logoRect = logo.getBoundingClientRect();
+            var offsetX = logoRect.left + logoRect.width/2 - (videoRect.left + videoRect.width/2);
+            var offsetY = logoRect.top + logoRect.height/2 - (videoRect.top + videoRect.height/2);
+
+            video.style.setProperty('--logo-x', offsetX - 1000 +'px');
+            video.style.setProperty('--logo-y', offsetY - 400 + 'px');
+            video.classList.add('shrink-fade-to-logo');
+            setTimeout(function() {
+              header.classList.add('slide-up');
+              logo.classList.remove('hide');
+              video.classList.add('hide');
+              document.querySelector('.hero-text').classList.remove('hide');
+            }, 200); // 200ms to match animation duration
+          });
           video.addEventListener('timeupdate', function() {
-            if (video.duration && video.currentTime >= video.duration - 1) {
+            if (video.duration && video.currentTime >= video.duration - 1.5) {
               video.pause();
             }
           });
         });
       </script>
-      <h2>Homegrown AI Solutions Shaped For You</h2>
-      <h3>On-demand, flexible and deeply customized AI solutions that deliver results - fast</h3>
-      <p>Bonsai Studio is a full service AI agency that crafts AI solutions to deliver meaningful outcomes for you and your business. 
+      <div class="hero-text hide glass" style="height: 400px">
+        <h2>Homegrown AI Solutions Shaped For You</h2>
+        <h3>On-demand, flexible and deeply customized AI solutions that deliver results - fast</h3>
+        <p class="themeable-text">Bonsai Studio is a full service AI agency that crafts AI solutions to deliver meaningful outcomes for you and your business. 
         Grow with purpose toward your goals and prune the distraction. We are a full-service AI consultancy that designs and deploys bespoke
         AI workflows and agents to solve your business challenges. We don’t use templates. We create tailored solutions that understand 
         your goals, adapt to your data, and get the job done. No tech jargon. No guesswork. Just results.</p>
       </div>
     </section>
-    <section id="featured-services">
+    <section id="featured-services glass">
       <h2>Featured AI Services</h2>
       <div class="card-container">
         <?php foreach ($selected as $service): ?>
-          <div class="service-card">
+          <div class="service-card glass">
             <h3><?= htmlspecialchars($service['title']) ?></h3>
-            <span class="service-category-pill">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d572c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;"><path d="M20.59 13.41a2 2 0 0 0 0-2.82l-7.18-7.18a2 2 0 0 0-2.82 0l-5.18 5.18a2 2 0 0 0 0 2.82l7.18 7.18a2 2 0 0 0 2.82 0z"></path><path d="M7 7l3-3"></path></svg>
-              <?= htmlspecialchars($service['category']) ?>
+            <span class="service-category filter-buttons">
+             <a href="services-catalog.php?category=<?= urlencode($service['category']) ?>"><?= htmlspecialchars($service['category']) ?> <i class="fas fa-tag"></i></a>
             </span>
             <p><?= htmlspecialchars($service['short_description']) ?></p>
             <a href="service.php?slug=<?= urlencode($service['slug']) ?>" class="cta-button" style="margin-top:1rem;display:inline-block;">View Service</a>
@@ -98,7 +84,7 @@ if (count($services) > 3) {
       </div>
     </section>
     
-  <section class="benefits">
+  <section class="benefits glass">
     <div class="container">
       <h3>Key Benefits</h3>
       <div class="benefit-carousel">

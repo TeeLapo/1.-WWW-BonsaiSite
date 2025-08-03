@@ -1,4 +1,14 @@
 <?php
-$pdo = new PDO('mysql:host=localhost;dbname=bonsai', 'root', '');
-// No password needed for 'root' by default. Let me know if you need help changing the password or using MariaDB!
+
+$db_host = 'localhost';
+$db_name = 'bonsai';
+$db_user = 'root';
+$db_pass = '';
+
+try {
+    $pdo = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Database connection failed: " . $e->getMessage());
+}
 ?>
