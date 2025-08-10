@@ -1,30 +1,56 @@
 <?php
-session_start();
-require '../includes/db.php';
+require_once 'admin-check.php'; // Ensure the user is an admin before accessing this page
 
-if (!isset($_SESSION['user_id']) || !$_SESSION['is_admin']) {
-    header("Location: ../login.php");
-    exit();
-}
-
-$query = $pdo->query("SELECT * FROM services");
-$services = $query->fetchAll();
+// --- Fetch Dashboard Stats ---
+// These queries provide the "At-a-Glance" view
+$user_count = $pdo->query("SELECT count(*) FROM users")->fetchColumn();
+$service_count = $pdo->query("SELECT count(*) FROM services")->fetchColumn();
+$pending_projects_count = $pdo->query("SELECT count(*) FROM projects WHERE status = 'Pending Quote'")->fetchColumn(); // From a previous step
 ?>
 
-<!DOCTYPE html>
-<html>
-<head><title>Manage Services</title></head>
-<body>
-  <h1>Admin: Manage Services</h1>
-  <a href="add.php">+ Add New Service</a>
-  <ul>
-    <?php foreach ($services as $s): ?>
-      <li>
-        <?= htmlspecialchars($s['title']) ?>
-        <a href="edit.php?id=<?= $s['id'] ?>">Edit</a>
-        <a href="delete.php?id=<?= $s['id'] ?>" onclick="return confirm('Are you sure?')">Delete</a>
-      </li>
-    <?php endforeach; ?>
-  </ul>
+<?php $page_title = "Bonsai Studio – Admin Dashboard"; ?>
+<?php require_once('header.php'); ?>
+    <main class="container">
+        
+        <h2>Site Overview</h2>
+        <div class="card-container">
+            <div class="service-card">
+                <h3>Total Users</h3>
+                <p><?php echo $user_count; ?></p>
+            </div>
+            <div class="service-card">
+                <h3>Total Services</h3>
+                <p><?php echo $service_count; ?></p>
+            </div>
+            <div class="service-card">
+                <h3>Pending Projects</h3>
+                <p><?php echo $pending_projects_count; ?></p>
+            </div>
+        </div>
+
+        <hr style="margin: 2rem 0;">
+
+        <h2>Management Tools</h2>
+        <div class="card-container">
+
+            <div class="service-card admin-icon">
+                <h3>User Administration</h3>
+                <span class = "material-symbols-outlined">Groups</span>
+                <a href="user-admin.php" class="cta-button admin">Manage Users</a>
+            </div>
+
+            <div class="service-card admin-icon">
+                <h3>Service Administration</h3>
+                <span class = "material-symbols-outlined">Build</span>
+                <a href="services-admin.php" class="cta-button admin">Manage Services</a>
+            </div>
+
+            <div class="service-card admin-icon">
+                <h3>Site Configuration</h3>
+                <span class = "material-symbols-outlined">Palette</span>
+                <a href="site_settings.php" class="cta-button admin">Edit Settings</a>
+            </div>
+        </div>
+    </main>
 </body>
 </html>

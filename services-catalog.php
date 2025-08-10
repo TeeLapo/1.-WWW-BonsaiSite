@@ -1,5 +1,8 @@
 <?php
-include('db.php');
+$page_title = "Bonsai Studio – Service Catalog";
+?>
+<?php require_once('header.php'); ?>
+<?php
 $category = $_GET['category'] ?? null;
 if ($category) {
     $stmt = $pdo->prepare("SELECT * FROM services WHERE category = ?");
@@ -9,11 +12,10 @@ if ($category) {
 }
 $services = $stmt->fetchAll();
 ?>
-<?php require('header.php'); ?>
 <section class="services">
   <div class="container">
     <h2>Our Services</h2>
-    <p>At BonsAI Studio, we offer a range of AI-powered services customized to help you achieve your goals.</p>
+    <p>At Bonsai Studio, we offer a range of AI-powered services customized to help you achieve your goals.</p>
     <div class="card-container">
       <div class="filter-buttons">
         <a href="?category=Career%20%26%20Professional%20Development" class="<?= $category === 'Career & Professional Development' ? 'active' : '' ?>">Career & Professional Development</a>
@@ -24,6 +26,9 @@ $services = $stmt->fetchAll();
       </div>
       <?php foreach ($services as $service): ?>
         <div class="service-card" data-category="<?= htmlspecialchars($service['category']) ?>">
+          <?php if(isset($_SESSION['is_admin'])): ?>
+            <a href="services-admin.php?id=<?= urlencode($service['id']) ?>" class="edit-link">Edit</a>
+          <?php endif; ?>
           <h3><?= htmlspecialchars($service['title']) ?></h3>
           <span class="service-category filter-buttons">
             <a href="services-catalog.php?category=<?= urlencode($service['category']) ?>">
@@ -34,6 +39,11 @@ $services = $stmt->fetchAll();
           <a href="services.php?slug=<?= urlencode($service['slug']) ?>" class="cta-button">Learn More</a>
         </div>
       <?php endforeach; ?>
+        <?php if (isset($_SESSION['is_admin'])): ?>
+        <div class="add-new service-card">
+          <p><a href="services-admin.php" class="cta-button admin">Add Service</a></p>
+        </div>
+      <?php endif; ?>
     </div>
   </div>
 </section>
